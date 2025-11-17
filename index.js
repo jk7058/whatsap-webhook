@@ -20,10 +20,13 @@ app.post("/webhook", async (req, res) => {
         const changes = entry?.changes?.[0];
         const message = changes?.value?.messages?.[0];
 
-        if (!message) return res.sendStatus(200);
+        // Ignore delivery/read/status updates
+        if (!message || !message.text) {
+            return res.sendStatus(200);
+        }
 
-        const from = message.from; // user number
-        const text = message.text?.body || "";
+        const from = message.from;
+        const text = message.text.body;
 
         console.log("Incoming message:", text);
 
@@ -42,12 +45,14 @@ app.post("/webhook", async (req, res) => {
         );
 
         console.log("Auto reply sent to:", from);
+
     } catch (err) {
         console.log("Error:", err.response?.data || err.message);
     }
 
     return res.sendStatus(200);
 });
+
 
 // Webhook verify endpoint
 app.get("/webhook", (req, res) => {
