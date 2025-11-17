@@ -6,7 +6,7 @@ const app = express();
 app.use(bodyParser.json());
 
 // ===== Replace with your details =====
-const TOKEN = "EAAVccvv6crcBP8kEybOVGghnrWfLMWztwEfFHfw6aWoZAjKcUjVc3yjqL8B3KOXqRub9TSd9YChVVlPwb3szbe6DvbgaQMFrKzSKvKIF1KTXJI1pRW50ucOZBpmZALy5MJukGY6ZC84d65tUYPSSjWa33hn0ljn8wQwsI7fZCb72XZCwl3Pc6drNJSd5yww2yl0AiV0pzN20kkvObKVZBNM60ZCw4UgZBJ32fZAGhn2FTe";
+const TOKEN = "EAAVccvv6crcBP7BmShEYUFXgUAP3ZAHBRoYuCeLDbGwrZBZAmdLGv2WJhs82muC5DKsrcLimhuhMPV5yJXqmItQ9xK9iFk1Y0FZCbZB5N8ZCP3oqx98igqJa6hK5GorHKJaMZA4kQR8uiBnSgHZA1SNHgmzW4Xky9w01hmGZAaGZCJ9BJymaQ8laMJYk642QT7dTjBpPzjxOwPn3EvH4G0mZApviUjlz7FLQXYhLGRCPaZAWCDllhBUZD";
 const PHONE_NUMBER_ID = "1173449351405517";
 // =====================================
 
