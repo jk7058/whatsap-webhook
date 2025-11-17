@@ -7,7 +7,7 @@ app.use(bodyParser.json());
 
 // ===== Replace with your details =====
 const TOKEN = "EAAVccvv6crcBP7BmShEYUFXgUAP3ZAHBRoYuCeLDbGwrZBZAmdLGv2WJhs82muC5DKsrcLimhuhMPV5yJXqmItQ9xK9iFk1Y0FZCbZB5N8ZCP3oqx98igqJa6hK5GorHKJaMZA4kQR8uiBnSgHZA1SNHgmzW4Xky9w01hmGZAaGZCJ9BJymaQ8laMJYk642QT7dTjBpPzjxOwPn3EvH4G0mZApviUjlz7FLQXYhLGRCPaZAWCDllhBUZD";
-const PHONE_NUMBER_ID = "1173449351405517";
+const PHONE_NUMBER_ID = "790723844134461";
 // =====================================
 
 // Auto-reply message
