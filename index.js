@@ -6,8 +6,8 @@ const app = express();
 app.use(bodyParser.json());
 
 // ===== Replace with your details =====
-const TOKEN = "EAAVccvv6crcBP7BmShEYUFXgUAP3ZAHBRoYuCeLDbGwrZBZAmdLGv2WJhs82muC5DKsrcLimhuhMPV5yJXqmItQ9xK9iFk1Y0FZCbZB5N8ZCP3oqx98igqJa6hK5GorHKJaMZA4kQR8uiBnSgHZA1SNHgmzW4Xky9w01hmGZAaGZCJ9BJymaQ8laMJYk642QT7dTjBpPzjxOwPn3EvH4G0mZApviUjlz7FLQXYhLGRCPaZAWCDllhBUZD";
-const PHONE_NUMBER_ID = "1173449351405517";
+const TOKEN = "EAALPKL3YVj0BP185dBEzOduuvc6sxXhH5ubAUdrX9ZAmDHQHEVYdTMjyZBNQP21KYIVgIM5RFyeaLVVjJ4DRJt2PONZADZAFgRD2tZBZA8kw0a9O8BskFEjRWJ6vPRIv6wZBLsvp7xbfXOZBcB0M585P9HoDqMscZBnLtkE18FZCiyz0b6rstZAlDqerzdkhgX1myZClDahjuIdSSejLRyrgqIbmMvxJ0fFrI6lzHnaE47BEGnopvAZDZD";
+const PHONE_NUMBER_ID = "899206953271570";
 // =====================================
 
 // Auto-reply message
