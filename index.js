@@ -1,1 +1,71 @@
-const express = require("express"); const axios = require("axios"); const bodyParser = require("body-parser"); const app = express(); app.use(bodyParser.json()); // ===== Your Working Details (do not change) ===== const TOKEN = "EAALPKL3YVj0BPyq6FX3RIqCQg6DSiQFXDXiQT6N7ZClYs2vgZADl11fyhy1zclly2NaZBlnyJTbJK9jErNZA8PF8YIIbZBr8zVZAjuv8E50gvpOKJ16HbsIA9OiulavNVisKBEXdHOXBxZCR95aRDqpPyATeaw5NVPFs3nAyByS43jX2vvs5Yje3Wm7PIGWicTj7ZBKBoJVbHsWlRaZCYSEn7Sbi94QkzNUV57phbpLZAnWqlCmfpiJR98ulVJTGIZAi3An0EmQjKVFaBD01eoZBPNXTrKnZB"; const PHONE_NUMBER_ID = "899206953271570"; // ================================================= // Simple session to store user language const sessions = new Map(); // Send text message async function sendText(to, message) { try { await axios.post( https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages, { messaging_product: "whatsapp", to, type: "text", text: { body: message } }, { headers: { Authorization: Bearer ${TOKEN} } } ); } catch (err) { console.log("sendText error:", err.response?.data || err.message); } } // Send language buttons async function sendLanguageButtons(to) { const payload = { messaging_product: "whatsapp", to, type: "interactive", interactive: { type: "button", body: { text: "Please select language / कृपया भाषा निवडा" }, action: { buttons: [ { type: "reply", reply: { id: "lang_marathi", title: "मराठी" } }, { type: "reply", reply: { id: "lang_english", title: "English" } } ] } } }; try { await axios.post( https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages, payload, { headers: { Authorization: Bearer ${TOKEN} } } ); } catch (err) { console.log("sendLanguageButtons error:", err.response?.data || err.message); } } // Send main services list async function sendMainMenu(to, lang = "english") { const text = lang === "marathi" ? "कृपया सेवा निवडा" : "Please choose a service"; const payload = { messaging_product: "whatsapp", to, type: "interactive", interactive: { type: "list", body: { text }, footer: { text: "Zila Parishad Aurangabad" }, action: { button: lang === "marathi" ? "सेवा निवडा" : "Select Service", sections: [ { title: "Citizen Services", rows: [ { id: "student_services", title: "🧑‍🎓 Student Services" }, { id: "farmer_services", title: "🚜 Agriculture Services" }, { id: "health_services", title: "🚑 Health & Hospitals" }, { id: "complaints", title: "🛑 File Complaint" } ] } ] } } }; try { await axios.post( https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages, payload, { headers: { Authorization: Bearer ${TOKEN} } } ); } catch (err) { console.log("sendMainMenu error:", err.response?.data || err.message); } } // SUBMENU HANDLERS async function handleStudent(to, lang) { const msg = lang === "marathi" ? "🎓 विद्यार्थी सेवा:\n- शिष्यवृत्ती\n- प्रमाणपत्रे\n- परीक्षा माहिती\n\n'menu' लिहा मेनूसाठी" : "🎓 Student Services:\n- Scholarships\n- Certificates\n- Results\n\nType 'menu' to open menu"; await sendText(to, msg); } async function handleFarmer(to, lang) { const msg = lang === "marathi" ? "🚜 शेतकरी सेवा:\n- पीएम किसान\n- माती तपासणी केंद्र\n- पीक सल्ला\n\n'menu' लिहा मेनूसाठी" : "🚜 Farmer Services:\n- PM Kisan\n- Soil Test Centers\n- Crop Advisory\n\nType 'menu' to open menu"; await sendText(to, msg); } async function handleHealth(to, lang) { const msg = lang === "marathi" ? "🚑 आरोग्य सेवा:\n- PHC यादी\n- अँब्युलन्स 102\n- लसीकरण केंद्र\n\n'menu' लिहा मेनूसाठी" : "🚑 Health Services:\n- PHC List\n- Ambulance 102\n- Vaccination Centers\n\nType 'menu' to open menu"; await sendText(to, msg); } async function handleComplaint(to, lang) { const msg = lang === "marathi" ? "🛑 तक्रार नोंद:\nकृपया नाव, क्षेत्र आणि समस्या पाठवा.\n\n'menu' लिहा मेनूसाठी" : "🛑 File Complaint:\nPlease send Name, Area, and Issue.\n\nType 'menu' to open menu"; await sendText(to, msg); } // WEBHOOK POST app.post("/webhook", async (req, res) => { try { const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0]; if (!message) return res.sendStatus(200); const from = message.from; const type = message.type; const session = sessions.get(from) || {}; // TEXT MESSAGE if (type === "text") { const text = message.text.body.toLowerCase(); if (text === "hi" || text === "hello" || text === "menu") { await sendLanguageButtons(from); return res.sendStatus(200); } if (!session.lang) { await sendLanguageButtons(from); return res.sendStatus(200); } return res.sendText(from, "Type 'menu' to open services."); } // INTERACTIVE if (type === "interactive") { const interactive = message.interactive; // LANGUAGE BUTTON if (interactive.type === "button_reply") { const id = interactive.button_reply.id; if (id === "lang_marathi") { sessions.set(from, { lang: "marathi" }); await sendMainMenu(from, "marathi"); } if (id === "lang_english") { sessions.set(from, { lang: "english" }); await sendMainMenu(from, "english"); } return res.sendStatus(200); } // LIST REPLY if (interactive.type === "list_reply") { const id = interactive.list_reply.id; const lang = session.lang || "english"; if (id === "student_services") await handleStudent(from, lang); if (id === "farmer_services") await handleFarmer(from, lang); if (id === "health_services") await handleHealth(from, lang); if (id === "complaints") await handleComplaint(from, lang); return res.sendStatus(200); } } } catch (err) { console.log("Webhook Error:", err.response?.data || err.message); } return res.sendStatus(200); }); // WEBHOOK VERIFY app.get("/webhook", (req, res) => { const VERIFY_TOKEN = "testtoken"; if ( req.query["hub.mode"] === "subscribe" && req.query["hub.verify_token"] === VERIFY_TOKEN ) { return res.status(200).send(req.query["hub.challenge"]); } return res.sendStatus(403); }); app.listen(8000, () => console.log("Bot running on port 8000"));
+const express = require("express");
+const axios = require("axios");
+const bodyParser = require("body-parser");
+
+const app = express();
+app.use(bodyParser.json());
+
+// ===== Replace with your details =====
+const TOKEN = "EAALPKL3YVj0BPyq6FX3RIqCQg6DSiQFXDXiQT6N7ZClYs2vgZADl11fyhy1zclly2NaZBlnyJTbJK9jErNZA8PF8YIIbZBr8zVZAjuv8E50gvpOKJ16HbsIA9OiulavNVisKBEXdHOXBxZCR95aRDqpPyATeaw5NVPFs3nAyByS43jX2vvs5Yje3Wm7PIGWicTj7ZBKBoJVbHsWlRaZCYSEn7Sbi94QkzNUV57phbpLZAnWqlCmfpiJR98ulVJTGIZAi3An0EmQjKVFaBD01eoZBPNXTrKnZB";
+const PHONE_NUMBER_ID = "899206953271570";
+// =====================================
+
+// Auto-reply message
+const autoReply = "Hello 👋\nThank you for messaging us!\n\nThis is our demo auto-reply bot.";
+
+// Webhook endpoint
+app.post("/webhook", async (req, res) => {
+    try {
+        const entry = req.body.entry?.[0];
+        const changes = entry?.changes?.[0];
+        const message = changes?.value?.messages?.[0];
+
+        // Ignore delivery/read/status updates
+        if (!message || !message.text) {
+            return res.sendStatus(200);
+        }
+
+        const from = message.from;
+        const text = message.text.body;
+
+        console.log("Incoming message:", text);
+
+        // Send Auto Reply
+        await axios.post(
+            `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
+            {
+                messaging_product: "whatsapp",
+                to: from,
+                type: "text",
+                text: { body: autoReply }
+            },
+            {
+                headers: { Authorization: `Bearer ${TOKEN}` }
+            }
+        );
+
+        console.log("Auto reply sent to:", from);
+
+    } catch (err) {
+        console.log("Error:", err.response?.data || err.message);
+    }
+
+    return res.sendStatus(200);
+});
+
+
+// Webhook verify endpoint
+app.get("/webhook", (req, res) => {
+    const VERIFY_TOKEN = "testtoken";
+    const mode = req.query["hub.mode"];
+    const token = req.query["hub.verify_token"];
+    const challenge = req.query["hub.challenge"];
+
+    if (mode === "subscribe" && token === VERIFY_TOKEN) {
+        return res.status(200).send(challenge);
+    }
+
+    return res.sendStatus(403);
+});
+
+app.listen(8000, () => console.log("Bot running on port 8000"));
