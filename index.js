@@ -102,6 +102,47 @@ async function sendMainMenu(to, lang = "english") {
 }
 
 
+// ---------------- MESSAGE HANDLERS ----------------
+
+async function handleStudent(to, lang) {
+  await sendText(
+    to,
+    lang === "marathi"
+      ? "🎓 विद्यार्थी सेवा:\n- शिष्यवृत्ती\n- प्रमाणपत्रे\n- परीक्षा"
+      : "🎓 Student Services:\n- Scholarships\n- Certificates\n- Results"
+  );
+}
+
+async function handleFarmer(to, lang) {
+  await sendText(
+    to,
+    lang === "marathi"
+      ? "🚜 शेतकरी सेवा:\n- पीएम किसान\n- माती तपासणी केंद्र"
+      : "🚜 Farmer Services:\n- PM Kisan\n- Soil Test Centers"
+  );
+}
+
+async function handleHealth(to, lang) {
+  await sendText(
+    to,
+    lang === "marathi"
+      ? "🚑 आरोग्य सेवा:\n- PHC यादी\n- अँब्युलन्स 102"
+      : "🚑 Health Services:\n- PHC List\n- Ambulance 102"
+  );
+}
+
+async function handleComplaint(to, lang) {
+  await sendText(
+    to,
+    lang === "marathi"
+      ? "🛑 तक्रार नोंद: कृपया नाव, क्षेत्र, समस्या पाठवा."
+      : "🛑 File Complaint: Please send Name, Area, Issue."
+  );
+}
+
+
+
+
 // Webhook endpoint
 app.post("/webhook", async (req, res) => {
     try {
