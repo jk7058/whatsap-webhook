@@ -7,7 +7,10 @@ const app = express();
 app.use(bodyParser.json());
 
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN || 'testtoken';
+const TOKEN_N = process.env.WA_TOKEN || '';
 console.log(VERIFY_TOKEN + "testing by junaid");
+console.log(TOKEN_N + "testing by junaid");
+
 // ===== Replace with your details =====
 const TOKEN = "EAALPKL3YVj0BPyq6FX3RIqCQg6DSiQFXDXiQT6N7ZClYs2vgZADl11fyhy1zclly2NaZBlnyJTbJK9jErNZA8PF8YIIbZBr8zVZAjuv8E50gvpOKJ16HbsIA9OiulavNVisKBEXdHOXBxZCR95aRDqpPyATeaw5NVPFs3nAyByS43jX2vvs5Yje3Wm7PIGWicTj7ZBKBoJVbHsWlRaZCYSEn7Sbi94QkzNUV57phbpLZAnWqlCmfpiJR98ulVJTGIZAi3An0EmQjKVFaBD01eoZBPNXTrKnZB";
 const PHONE_NUMBER_ID = "899206953271570";
