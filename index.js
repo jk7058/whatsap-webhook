@@ -5,14 +5,30 @@ const bodyParser = require("body-parser");
 const app = express();
 app.use(bodyParser.json());
 
-// ===== Replace with your details =====
-const TOKEN = "EAALPKL3YVj0BPyq6FX3RIqCQg6DSiQFXDXiQT6N7ZClYs2vgZADl11fyhy1zclly2NaZBlnyJTbJK9jErNZA8PF8YIIbZBr8zVZAjuv8E50gvpOKJ16HbsIA9OiulavNVisKBEXdHOXBxZCR95aRDqpPyATeaw5NVPFs3nAyByS43jX2vvs5Yje3Wm7PIGWicTj7ZBKBoJVbHsWlRaZCYSEn7Sbi94QkzNUV57phbpLZAnWqlCmfpiJR98ulVJTGIZAi3An0EmQjKVFaBD01eoZBPNXTrKnZB";
+// ===== Your WhatsApp API Details =====
+const TOKEN = "EAALPKL3YVj0BPyq6FX3RIqCQg6DSiQFXDXiQT6N7ZClYs2vgZADl11fyhy1zclly2NaZBlnyJTbJK9jErNZA8PF8YIIbZBr8ZAj...";
 const PHONE_NUMBER_ID = "899206953271570";
 // =====================================
 
-// Auto-reply message
-const autoReply = "Hello 👋\nThank you for messaging us!\n\nThis is our demo auto-reply bot.";
+const sessions = new Map();
 
+// Send text message
+async function sendText(to, message) {
+  try {
+    await axios.post(
+      `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
+      {
+        messaging_product: "whatsapp",
+        to,
+        type: "text",
+        text: { body: message }
+      },
+      { headers: { Authorization: `Bearer ${TOKEN}` } }
+    );
+  } catch (err) {
+    console.log("sendText error:", err.response?.data || err.message);
+  }
+}
 // Webhook endpoint
 app.post("/webhook", async (req, res) => {
     try {
