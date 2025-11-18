@@ -6,7 +6,7 @@ const app = express();
 app.use(bodyParser.json());
 
 // ===== Your WhatsApp API Details =====
-const TOKEN = "EAALPKL3YVj0BP4ZBI9x6y0X5XI7h6wLWZAB4VfhuDA45SjK3VwbmnU6eWYlVLhMV4UwKcgfWeaAfN1BJZCUZB5boHCcYQi5gTynlTOHYD93ZBGZBX8oyqhM70vZBsZCiT1gzmXCcZBgxS3uZCZBc8npM38hnejwdumI6o1PHRbcs2tnwHMlRDp1kPB35LGxfZCKE58jwF2fbjJS4hXV7ExgRATw9JFjDD4kItZAk4c2cZAE7Ni99BMuAaaqmxyZBkkHSGKBJpYS4RM8ZB0MmbMJGSysYVDsTt5b0lQZDZD";
+const TOKEN = "EAALPKL3YVj0BPZCkjgqkMlm3oTNJloskmdOVDTsxZBahbnvPQFPuWcN6urpWYZCPLbcdu70ZAqndAUQUZBUn5QDdaHI3GKU07ZCBVi9X572PN0inyOHyIQJJYZCQmheZC0emxoQBaD9JcmNk5AQhbDWjtYQffqy3qvvWSdkCmENPZAliTnkORKzG2i9kEwW9lajg7oZCvqUbOOfhC7o2obsJi2svUSNXOdw5RTx34XE9DbVThbj5d7ScmwzqBV12z6mDXQWyoeAq5kxJ11JwP6h3DvqkXZB";
 const PHONE_NUMBER_ID = "899206953271570";
 // =====================================
 
@@ -63,7 +63,32 @@ async function sendLanguageButtons(to) {
 
 // Send main menu
 async function sendMainMenu(to, lang = "english") {
-  const title = lang === "marathi" ? "कृपया सेवा निवडा" : "Please choose a service";
+  const isMarathi = lang === "marathi";
+
+  const title = isMarathi
+    ? "कृपया खालीलपैकी सेवा निवडा"
+    : "Please choose a service";
+
+  const footer = isMarathi
+    ? "जिल्हा परिषद औरंगाबाद"
+    : "Zila Parishad Aurangabad";
+
+  const button = isMarathi ? "सेवा निवडा" : "Select Service";
+
+  // SERVICE LISTS IN BOTH LANGUAGES
+  const rows = isMarathi
+    ? [
+        { id: "student_services", title: "🧑‍🎓 विद्यार्थी सेवा", description: "शिष्यवृत्ती, प्रमाणपत्रे" },
+        { id: "farmer_services", title: "🚜 शेतकरी सेवा", description: "योजना, माती तपासणी" },
+        { id: "health_services", title: "🚑 आरोग्य सेवा", description: "PHC, अँब्युलन्स 102" },
+        { id: "complaints", title: "🛑 तक्रार नोंद", description: "आपली समस्या नोंदवा" }
+      ]
+    : [
+        { id: "student_services", title: "🧑‍🎓 Student Services", description: "Scholarships, Certificates" },
+        { id: "farmer_services", title: "🚜 Agriculture Services", description: "Schemes, Soil Test" },
+        { id: "health_services", title: "🚑 Health & Hospitals", description: "PHC, Ambulance" },
+        { id: "complaints", title: "🛑 File Complaint", description: "Register grievance" }
+      ];
 
   const json = {
     messaging_product: "whatsapp",
@@ -72,18 +97,13 @@ async function sendMainMenu(to, lang = "english") {
     interactive: {
       type: "list",
       body: { text: title },
-      footer: { text: "Zila Parishad Aurangabad" },
+      footer: { text: footer },
       action: {
-        button: lang === "marathi" ? "सेवा निवडा" : "Select Service",
+        button,
         sections: [
           {
-            title: "Citizen Services",
-            rows: [
-              { id: "student_services", title: "🧑‍🎓 Student Services" },
-              { id: "farmer_services", title: "🚜 Agriculture Services" },
-              { id: "health_services", title: "🚑 Health & Hospitals" },
-              { id: "complaints", title: "🛑 File Complaint" }
-            ]
+            title: isMarathi ? "नागरिक सेवा" : "Citizen Services",
+            rows
           }
         ]
       }
@@ -105,39 +125,66 @@ async function sendMainMenu(to, lang = "english") {
 // ---------------- MESSAGE HANDLERS ----------------
 
 async function handleStudent(to, lang) {
-  await sendText(
-    to,
-    lang === "marathi"
-      ? "🎓 विद्यार्थी सेवा:\n- शिष्यवृत्ती\n- प्रमाणपत्रे\n- परीक्षा"
-      : "🎓 Student Services:\n- Scholarships\n- Certificates\n- Results"
-  );
+  const msg = lang === "marathi"
+    ? "🎓 *विद्यार्थी सेवा*\n\n" +
+      "• शिष्यवृत्ती माहिती\n" +
+      "• जात / निवास प्रमाणपत्र\n" +
+      "• परीक्षा निकाल\n\n" +
+      "📌 *मेनूसाठी 'menu' लिहा*"
+    : "🎓 *Student Services*\n\n" +
+      "• Scholarship Information\n" +
+      "• Certificates (Caste / Residence)\n" +
+      "• Exam Results\n\n" +
+      "📌 Type *menu* to return to main menu";
+
+  await sendText(to, msg);
 }
 
 async function handleFarmer(to, lang) {
-  await sendText(
-    to,
-    lang === "marathi"
-      ? "🚜 शेतकरी सेवा:\n- पीएम किसान\n- माती तपासणी केंद्र"
-      : "🚜 Farmer Services:\n- PM Kisan\n- Soil Test Centers"
-  );
+  const msg = lang === "marathi"
+    ? "🚜 *शेतकरी सेवा*\n\n" +
+      "• पीएम किसान स्थिती\n" +
+      "• माती तपासणी केंद्र\n" +
+      "• कृषी सल्ला\n\n" +
+      "📌 *मेनूसाठी 'menu' लिहा*"
+    : "🚜 *Farmer Services*\n\n" +
+      "• PM-Kisan Status\n" +
+      "• Soil Testing Centers\n" +
+      "• Crop Advisory\n\n" +
+      "📌 Type *menu* to return to main menu";
+
+  await sendText(to, msg);
 }
 
 async function handleHealth(to, lang) {
-  await sendText(
-    to,
-    lang === "marathi"
-      ? "🚑 आरोग्य सेवा:\n- PHC यादी\n- अँब्युलन्स 102"
-      : "🚑 Health Services:\n- PHC List\n- Ambulance 102"
-  );
+  const msg = lang === "marathi"
+    ? "🚑 *आरोग्य सेवा*\n\n" +
+      "• PHC (प्राथमिक आरोग्य केंद्र) यादी\n" +
+      "• अँब्युलन्स सेवा – 102\n" +
+      "• लसीकरण केंद्र माहिती\n\n" +
+      "📌 *मेनूसाठी 'menu' लिहा*"
+    : "🚑 *Health Services*\n\n" +
+      "• PHC List\n" +
+      "• Ambulance – 102\n" +
+      "• Vaccination Centers\n\n" +
+      "📌 Type *menu* to return to main menu";
+
+  await sendText(to, msg);
 }
 
+
 async function handleComplaint(to, lang) {
-  await sendText(
-    to,
-    lang === "marathi"
-      ? "🛑 तक्रार नोंद: कृपया नाव, क्षेत्र, समस्या पाठवा."
-      : "🛑 File Complaint: Please send Name, Area, Issue."
-  );
+  const msg = lang === "marathi"
+    ? "🛑 *तक्रार नोंद*\n\n" +
+      "कृपया खालील माहिती पाठवा:\n" +
+      "• नाव\n• क्षेत्र\n• तक्रारीचे तपशील\n\n" +
+      "📌 आमची टीम लवकरच संपर्क करेल."
+    : "🛑 *File Complaint*\n\n" +
+      "Please send the following details:\n" +
+      "• Name\n• Area\n• Complaint Details\n\n" +
+      "📌 Our team will contact you soon.";
+
+  await sendText(to, msg);
 }
 
 
