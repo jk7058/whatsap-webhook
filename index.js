@@ -20,7 +20,7 @@ if (!TOKEN || !PHONE_NUMBER_ID) {
 
 // simple in-memory session store (demo only)
 const sessions = new Map(); // key: user phone, value: {lang}
-  console.log("3")
+  console.log(sessions)
 
 // Utility: send text message
 async function sendText(to, text) {
