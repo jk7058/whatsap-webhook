@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const axios = require("axios");
 const bodyParser = require("body-parser");
@@ -5,6 +6,8 @@ const bodyParser = require("body-parser");
 const app = express();
 app.use(bodyParser.json());
 
+const VERIFY_TOKEN = process.env.VERIFY_TOKEN || 'testtoken';
+console.log(VERIFY_TOKEN + "testing by junaid");
 // ===== Replace with your details =====
 const TOKEN = "EAALPKL3YVj0BPyq6FX3RIqCQg6DSiQFXDXiQT6N7ZClYs2vgZADl11fyhy1zclly2NaZBlnyJTbJK9jErNZA8PF8YIIbZBr8zVZAjuv8E50gvpOKJ16HbsIA9OiulavNVisKBEXdHOXBxZCR95aRDqpPyATeaw5NVPFs3nAyByS43jX2vvs5Yje3Wm7PIGWicTj7ZBKBoJVbHsWlRaZCYSEn7Sbi94QkzNUV57phbpLZAnWqlCmfpiJR98ulVJTGIZAi3An0EmQjKVFaBD01eoZBPNXTrKnZB";
 const PHONE_NUMBER_ID = "899206953271570";
