@@ -11,16 +11,21 @@ const VERIFY_TOKEN = process.env.VERIFY_TOKEN || 'testtoken';
 const TOKEN = process.env.WA_TOKEN || ''; // long-lived token
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID || ''; // numeric id like 12345...
 const PORT = process.env.PORT || 8000;
+  console.log("1")
 
 if (!TOKEN || !PHONE_NUMBER_ID) {
   console.warn('WARN: WA_TOKEN or PHONE_NUMBER_ID missing. Set env vars WA_TOKEN and PHONE_NUMBER_ID');
 }
+  console.log("2")
 
 // simple in-memory session store (demo only)
 const sessions = new Map(); // key: user phone, value: {lang}
+  console.log("3")
 
 // Utility: send text message
 async function sendText(to, text) {
+    console.log("4")
+
   try {
     await axios.post(
       `https://graph.facebook.com/v24.0/${PHONE_NUMBER_ID}/messages`,
@@ -39,6 +44,8 @@ async function sendText(to, text) {
 
 // Utility: send button (language selection)
 async function sendLanguageButtons(to) {
+    console.log("5")
+
   const payload = {
     messaging_product: 'whatsapp',
     to,
