@@ -29,6 +29,79 @@ async function sendText(to, message) {
     console.log("sendText error:", err.response?.data || err.message);
   }
 }
+
+
+
+// Send language buttons
+async function sendLanguageButtons(to) {
+  const json = {
+    messaging_product: "whatsapp",
+    to,
+    type: "interactive",
+    interactive: {
+      type: "button",
+      body: { text: "Select your language / कृपया भाषा निवडा" },
+      action: {
+        buttons: [
+          { type: "reply", reply: { id: "lang_marathi", title: "मराठी" } },
+          { type: "reply", reply: { id: "lang_english", title: "English" } }
+        ]
+      }
+    }
+  };
+
+  try {
+    await axios.post(
+      `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
+      json,
+      { headers: { Authorization: `Bearer ${TOKEN}` } }
+    );
+  } catch (err) {
+    console.log("Language error:", err.response?.data || err.message);
+  }
+}
+
+// Send main menu
+async function sendMainMenu(to, lang = "english") {
+  const title = lang === "marathi" ? "कृपया सेवा निवडा" : "Please choose a service";
+
+  const json = {
+    messaging_product: "whatsapp",
+    to,
+    type: "interactive",
+    interactive: {
+      type: "list",
+      body: { text: title },
+      footer: { text: "Zila Parishad Aurangabad" },
+      action: {
+        button: lang === "marathi" ? "सेवा निवडा" : "Select Service",
+        sections: [
+          {
+            title: "Citizen Services",
+            rows: [
+              { id: "student_services", title: "🧑‍🎓 Student Services" },
+              { id: "farmer_services", title: "🚜 Agriculture Services" },
+              { id: "health_services", title: "🚑 Health & Hospitals" },
+              { id: "complaints", title: "🛑 File Complaint" }
+            ]
+          }
+        ]
+      }
+    }
+  };
+
+  try {
+    await axios.post(
+      `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
+      json,
+      { headers: { Authorization: `Bearer ${TOKEN}` } }
+    );
+  } catch (err) {
+    console.log("Menu error:", err.response?.data || err.message);
+  }
+}
+
+
 // Webhook endpoint
 app.post("/webhook", async (req, res) => {
     try {
