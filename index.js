@@ -208,6 +208,7 @@ async function processMessage(message) {
 
 // webhook verify endpoint (GET)
 app.get('/webhook', (req, res) => {
+  console.log("Hii")
   const mode = req.query['hub.mode'];
   const token = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
@@ -219,6 +220,7 @@ app.get('/webhook', (req, res) => {
 
 // webhook receiver (POST)
 app.post('/webhook', async (req, res) => {
+  console.log("POST")
   try {
     const body = req.body;
     // basic shape guard
