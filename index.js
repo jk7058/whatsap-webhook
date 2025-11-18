@@ -8,9 +8,12 @@ app.use(bodyParser.json());
 
 // env vars
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN || 'testtoken';
-const TOKEN = process.env.WA_TOKEN || ''; // long-lived token
-const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID || ''; // numeric id like 12345...
-const PORT = process.env.PORT || 8000;
+// const TOKEN = process.env.WA_TOKEN || ''; // long-lived token
+// const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID || ''; // numeric id like 12345...
+// const PORT = process.env.PORT || 8000;
+
+const TOKEN = "EAALPKL3YVj0BP185dBEzOduuvc6sxXhH5ubAUdrX9ZAmDHQHEVYdTMjyZBNQP21KYIVgIM5RFyeaLVVjJ4DRJt2PONZADZAFgRD2tZBZA8kw0a9O8BskFEjRWJ6vPRIv6wZBLsvp7xbfXOZBcB0M585P9HoDqMscZBnLtkE18FZCiyz0b6rstZAlDqerzdkhgX1myZClDahjuIdSSejLRyrgqIbmMvxJ0fFrI6lzHnaE47BEGnopvAZDZD";
+const PHONE_NUMBER_ID = "899206953271570";
 
 if (!TOKEN || !PHONE_NUMBER_ID) {
   console.warn('WARN: WA_TOKEN or PHONE_NUMBER_ID missing. Set env vars WA_TOKEN and PHONE_NUMBER_ID');
