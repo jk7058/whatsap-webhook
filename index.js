@@ -142,46 +142,116 @@ async function handleComplaint(to, lang) {
 
 
 
-
-// Webhook endpoint
 app.post("/webhook", async (req, res) => {
-    try {
-        const entry = req.body.entry?.[0];
-        const changes = entry?.changes?.[0];
-        const message = changes?.value?.messages?.[0];
+  try {
+    const msg = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+    if (!msg) return res.sendStatus(200);
 
-        // Ignore delivery/read/status updates
-        if (!message || !message.text) {
-            return res.sendStatus(200);
-        }
+    const from = msg.from;
+    const type = msg.type;
+    const session = sessions.get(from) || {};
 
-        const from = message.from;
-        const text = message.text.body;
+    // TEXT
+    if (type === "text") {
+      const text = msg.text.body.toLowerCase();
 
-        console.log("Incoming message:", text);
+      if (text === "hi" || text === "hello" || text === "menu") {
+        await sendLanguageButtons(from);
+        return res.sendStatus(200);
+      }
 
-        // Send Auto Reply
-        await axios.post(
-            `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
-            {
-                messaging_product: "whatsapp",
-                to: from,
-                type: "text",
-                text: { body: autoReply }
-            },
-            {
-                headers: { Authorization: `Bearer ${TOKEN}` }
-            }
-        );
+      if (!session.lang) {
+        await sendLanguageButtons(from);
+        return res.sendStatus(200);
+      }
 
-        console.log("Auto reply sent to:", from);
-
-    } catch (err) {
-        console.log("Error:", err.response?.data || err.message);
+      await sendText(from, "Type 'menu' to see services.");
+      return res.sendStatus(200);
     }
 
-    return res.sendStatus(200);
+    // INTERACTIVE
+    if (type === "interactive") {
+      const interactive = msg.interactive;
+
+      if (interactive.type === "button_reply") {
+        const id = interactive.button_reply.id;
+
+        if (id === "lang_marathi") {
+          sessions.set(from, { lang: "marathi" });
+          await sendMainMenu(from, "marathi");
+        }
+
+        if (id === "lang_english") {
+          sessions.set(from, { lang: "english" });
+          await sendMainMenu(from, "english");
+        }
+
+        return res.sendStatus(200);
+      }
+
+      if (interactive.type === "list_reply") {
+        const id = interactive.list_reply.id;
+        const lang = session.lang || "english";
+
+        if (id === "student_services") await handleStudent(from, lang);
+        if (id === "farmer_services") await handleFarmer(from, lang);
+        if (id === "health_services") await handleHealth(from, lang);
+        if (id === "complaints") await handleComplaint(from, lang);
+
+        return res.sendStatus(200);
+      }
+    }
+  } catch (e) {
+    console.log("Webhook error:", e.response?.data || e.message);
+  }
+
+  res.sendStatus(200);
 });
+
+
+
+
+
+
+// Webhook endpoint
+// app.post("/webhook", async (req, res) => {
+//     try {
+//         const entry = req.body.entry?.[0];
+//         const changes = entry?.changes?.[0];
+//         const message = changes?.value?.messages?.[0];
+
+//         // Ignore delivery/read/status updates
+//         if (!message || !message.text) {
+//             return res.sendStatus(200);
+//         }
+
+//         const from = message.from;
+//         const text = message.text.body;
+
+//         console.log("Incoming message:", text);
+
+//         // Send Auto Reply
+//         await axios.post(
+//             `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
+//             {
+//                 messaging_product: "whatsapp",
+//                 to: from,
+//                 type: "text",
+//                 text: { body: autoReply }
+//             },
+//             {
+//                 headers: { Authorization: `Bearer ${TOKEN}` }
+//             }
+//         );
+
+//         console.log("Auto reply sent to:", from);
+
+//     } catch (err) {
+//         console.log("Error:", err.response?.data || err.message);
+//     }
+
+//     return res.sendStatus(200);
+// });
 
 
 // Webhook verify endpoint
